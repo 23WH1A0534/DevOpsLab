@@ -14,11 +14,5 @@ pipeline {
                 archiveArtifacts artifacts: 'registration-form.zip', fingerprint: true
             }
         }
-
-        stage('Deploy') {
-            steps {
-                bat 'copy Registration.html C:\\xampp\\htdocs\\index.html /Y'
-            }
-        }
     }
 }
