@@ -10,29 +10,33 @@ pipeline {
 
         stage('Validate HTML') {
             steps {
-                // Install tidy on Jenkins machine (Linux: sudo apt install tidy)
-                sh 'tidy -errors -q index.html || true'
+                echo "Skipping HTML validation (tidy not available on Windows)"
             }
         }
 
         stage('Package') {
             steps {
-                sh 'zip -r registration-form.zip index.html'
+                // Use PowerShell to create a zip instead of Linux zip
+                bat 'powershell Compress-Archive -Path index.html -DestinationPath registration-form.zip -Force'
+                
+                // Save zip file as Jenkins artifact
                 archiveArtifacts artifacts: 'registration-form.zip', fingerprint: true
             }
         }
 
         stage('Deploy') {
             steps {
-                // Example: copy file to local Apache web server directory
-                sh 'sudo cp index.html /var/www/html/index.html'
+                echo "Deploying registration form to web server..."
+                
+                // Example: if using XAMPP on Windows
+                bat 'copy index.html C:\\xampp\\htdocs\\index.html /Y'
             }
         }
     }
 
     post {
         success {
-            echo 'Registration form deployed successfully!'
+            echo 'Registration form pipeline completed successfully!'
         }
         failure {
             echo 'Build failed!'
