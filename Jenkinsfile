@@ -4,42 +4,21 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                checkout scm
-            }
-        }
-
-        stage('Validate HTML') {
-            steps {
-                echo "Skipping HTML validation (tidy not available on Windows)"
+                git branch: 'main', url: 'https://github.com/23WH1A0534/DevOpsLab.git'
             }
         }
 
         stage('Package') {
             steps {
-                // Use PowerShell to create a zip instead of Linux zip
-                bat 'powershell Compress-Archive -Path index.html -DestinationPath registration-form.zip -Force'
-                
-                // Save zip file as Jenkins artifact
+                bat 'powershell Compress-Archive -Path Registration.html -DestinationPath registration-form.zip -Force'
                 archiveArtifacts artifacts: 'registration-form.zip', fingerprint: true
             }
         }
 
         stage('Deploy') {
             steps {
-                echo "Deploying registration form to web server..."
-                
-                // Example: if using XAMPP on Windows
-                bat 'copy index.html C:\\xampp\\htdocs\\index.html /Y'
+                bat 'copy Registration.html C:\\xampp\\htdocs\\index.html /Y'
             }
-        }
-    }
-
-    post {
-        success {
-            echo 'Registration form pipeline completed successfully!'
-        }
-        failure {
-            echo 'Build failed!'
         }
     }
 }
